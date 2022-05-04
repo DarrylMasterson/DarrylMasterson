@@ -1,0 +1,118 @@
+/* What does the app's SQL look like? */
+/*I will be imaging the DB structure of the app GoodReads*/
+CREATE TABLE authors (id Integer Primary Key,
+    firstName Text,
+    lastName Text,
+    deleted Integer);
+    
+CREATE TABLE status (id Integer Primary Key,
+    name Text);
+    
+CREATE TABLE books (id Integer Primary Key,
+    title Text,
+    pageCount Integer,
+    publishDate Text,
+    rating Integer,
+    authorID Integer,
+    statusID Integer,
+    genreID Integer,
+    finishDate Text,
+    deleted Integer);
+    
+CREATE TABLE genre (id Integer Primary Key,
+    name Text,
+    deleted Integer);
+    
+/*adding records to the genre table*/
+INSERT INTO genre (name, deleted) VALUES ("business", 0);
+INSERT INTO genre (name, deleted) VALUES ("leadership", 0);
+
+/*adding records to the status table*/
+INSERT INTO status (name) VALUES ("read");
+INSERT INTO status (name) VALUES ("want to read");
+INSERT INTO status (name) VALUES ("currently reading");
+
+/*altering status table to include deleted column*/
+ALTER TABLE status ADD deleted Integer default 0;
+
+SELECT * FROM status;
+
+/*adding records to the authors table*/
+INSERT INTO authors (firstName, lastName, deleted) 
+    VALUES ("Jeb", "Blount", 0);
+INSERT INTO authors (firstName, lastName, deleted)
+    VALUES ("Anthony", "Iannarino", 0);
+INSERT INTO authors (firstName, lastName, deleted)
+    VALUES ("Mark", "Hunter", 0);
+INSERT INTO authors (firstName, lastName, deleted)
+    VALUES ("Keith", "Rosen", 0);
+INSERT INTO authors (firstName, lastName, deleted)
+    VALUES ("Mike", "Weinberg", 0);
+
+SELECT * FROM authors;
+
+/*adding records to the books table*/
+INSERT INTO books (title, pageCount, publishDate, rating, authorID, statusID, genreID, finishDate, deleted)
+    VALUES ("Inked", 336, "01/15/2020",0,1,2,1,"",0);
+INSERT INTO books (title, pageCount, publishDate, rating, authorID, statusID, genreID, finishDate, deleted)
+    VALUES ("Sales EQ", 305, "03/02/2017",3,1,1,1,"",0);
+INSERT INTO books (title, pageCount, publishDate, rating, authorID, statusID, genreID, finishDate, deleted)
+    VALUES ("Fanatical Prospecting", 304, "10/05/2015", 4, 1, 1, 1,"", 0);
+INSERT INTO books (title, pageCount, publishDate, rating, authorID, statusID, genreID, finishDate, deleted)
+    VALUES ("Objections", 240, "05/17/2018", 4, 1, 1, 1, "", 0);
+INSERT INTO books (title, pageCount, publishDate, rating, authorID, statusID, genreID, finishDate, deleted)
+    VALUES ("People Follow You", 208, "11/15/2011", 2,1,1,2,"",0);
+INSERT INTO books (title, pageCount, publishDate, rating, authorID, statusID, genreID, finishDate, deleted)
+    VALUES ("Sales Leadership", 245,"07/11/2018",4,4,1,2,"",0);
+INSERT INTO books (title, pageCount, publishDate, rating, authorID, statusID, genreID, finishDate, deleted)
+    VALUES ("Extreme Ownership", 384, "11/21/2017", 1,1,2,2,"",0);
+
+SELECT * FROM books;
+
+/*add missing author to authors table*/
+INSERT INTO authors (firstName, lastName, deleted)
+    VALUES ("Jocko", "Willink", 0);
+
+/*update the record for the book Extreme Ownership*/
+UPDATE books SET authorID = 6 WHERE id = 7;
+
+SELECT * FROM books;
+
+/*update rating of all jeb blount books that i have read to 5*/
+UPDATE books SET rating = 5 WHERE authorID = 1 AND statusID = 1;
+
+SELECT * FROM books;
+
+/*deleting author from authors table though updating deleted column*/
+UPDATE authors SET deleted = 1 WHERE id = 6;
+
+SELECT * FROM authors;
+SELECT * FROM authors WHERE deleted = 0;
+
+/*deleting book from books table through updating deleted column*/
+UPDATE books SET deleted = 1 WHERE authorID = 6;
+
+SELECT * FROM books;
+SELECT * FROM books WHERE deleted = 0;
+
+/*actually deleting author from authors table*/
+DELETE FROM authors WHERE id = 6;
+
+SELECT * FROM authors;
+
+/*actually deleting book from books table*/
+DELETE FROM books WHERE authorID = 6;
+
+SELECT * FROM books;
+
+/*displaying data in more readable fashion*/
+SELECT a.firstName, a.lastName, b.title, b.pageCount, b.publishDate, b.rating, s.name as "Status", g.name as "Genre"
+    FROM books as b
+    LEFT OUTER JOIN authors as a
+    ON b.authorID = a.id
+    LEFT OUTER JOIN status as s
+    on b.statusID = s.id
+    LEFT OUTER JOIN genre as g
+    on b.genreID = g.id
+    WHERE b.statusID = 1
+    ORDER BY b.title;
