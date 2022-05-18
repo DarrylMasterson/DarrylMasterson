@@ -1,0 +1,100 @@
+/* Create table about the people and what they do here */
+CREATE TABLE authors (id INTEGER PRIMARY KEY,
+    firstName Text,
+    lastName Text);
+
+CREATE TABLE books (id INTEGER PRIMARY KEY,
+    title Text,
+    pages Integer,
+    publishDate Text,
+    authorID Integer,
+    genreID Integer,
+    statusID Integer);
+
+CREATE TABLE status (id Integer Primary Key,
+    name Text);
+
+CREATE TABLE genre (id Integer Primary Key,
+    name Text);
+
+INSERT INTO status (name) VALUES ("Read");
+INSERT INTO status (name) VALUES ("Reading");
+INSERT INTO status (name) VALUES ("Want to Read");
+INSERT INTO authors (firstName, lastName) VALUES ("Tana", "French");
+INSERT INTO genre (name) VALUES ("Crime Drama");
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("In the Woods", 429, "3/17/2007", 1,1,1);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("The Likeness", 624, "5/1/2009", 1, 1, 1);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("Faithful Place", 416, "7/13/2010", 1,1,1);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("Broken Harbour", 450, "4/28/2013", 1, 1, 3);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("The Secret Place", 541, "8/4/2015", 1, 1, 3);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("The Trespasser", 464, "8/7/2017", 1, 1, 3);
+INSERT INTO genre (name) VALUES ("Crime Fiction");
+INSERT INTO authors (firstName, lastName) VALUES ("Patricia", "Cornwell");
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("Postmortem", 352, "1/9/1990", 2, 2, 1);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("Body of Evidence", 403, "2/5/1991", 2,2,1);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("All That Remains", 463, "9/1/1992", 2, 2, 3);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("Cruel and Unusual", 409, "6/10/1993", 2,2,3);
+INSERT INTO authors (firstName, lastName) VALUES ("Robert", "Galbraith");
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("The Cuckoo's Calling", 464, "4/4/2013", 3, 2, 1);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("The Silkworm", 454, "6/19/2014", 3,2,1);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("Career of Evil", 512, "10/20/2015", 3,2,1);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("Lethal White", 656, "9/18/2018",3,2,1);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("Troubled Blood", 944, "9/15/2020", 3, 2, 1);
+INSERT INTO authors (firstName, lastName) VALUES ("Karen", "Traviss");
+INSERT INTO genre (name) VALUES ("Science Fiction");
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("Hard Contact", 304, "10/26/2004", 4, 3, 3);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("Triple Zero", 448, "2/28/2006", 4, 3, 3);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("True Colors", 496, "10/30/2007", 4, 3, 3);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("Order 66", 496, "5/19/2009", 4, 3, 3);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("501st", 464, "10/27/2009", 4, 3, 3);
+INSERT INTO authors (firstName, lastName) VALUES ("Danielle", "Paige");
+INSERT INTO genre (name) VALUES ("Fantasy");
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("Dorothy Must Die", 480, "4/1/2014", 5, 4, 1);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("The Wicked Will Rise", 293, "3/31/2015", 5, 4, 1);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("Yellow Brick War", 304, "3/14/2017", 5, 4, 1);
+INSERT INTO books (title, pages, publishDate, authorID, genreID, statusID) VALUES ("The End of Oz", 300, "3/14/2017", 5, 4, 3);
+
+SELECT a.firstName, a.lastName, b.title, b.publishDate, b.pages, g.name, s.name 
+    FROM books as b
+    LEFT OUTER JOIN authors as a
+    ON b.authorID = a.id
+    LEFT OUTER JOIN genre as g
+    ON b.genreID = g.id
+    LEFT OUTER JOIN status as s
+    ON b.statusID = s.id
+    ORDER BY a.lastName;
+
+SELECT a.firstName, a.lastName, sum(b.pages) as "Total Pages"
+    FROM books as b
+    LEFT OUTER JOIN authors as a
+    ON b.authorID = a.id
+    GROUP BY a.lastName
+    ORDER BY "Total Pages";
+
+SELECT a.firstName, a.lastName, ROUND(avg(b.pages)) AS "Avg Pages"
+    FROM books as b
+    LEFT OUTER JOIN authors as a
+    on b.authorID = a.id
+    GROUP BY a.lastName
+    ORDER BY "Avg Pages";
+
+/*How many books has each author written?*/
+SELECT a.firstName, a.lastName, count(b.title) AS "Total Books"
+    FROM authors as a
+    LEFT OUTER JOIN books as b
+    ON a.id = b.authorID
+    GROUP BY a.lastName;
+    
+/*Which book has the most pages for each author?*/
+SELECT a.firstName, a.lastName, max(b.pages), b.title AS "Longest Book"
+    FROM authors as a
+    LEFT OUTER JOIN books as b
+    ON a.id = b.authorID
+    GROUP BY a.lastName;
+    
+/*Which book was written first for each author?*/
+SELECT a.firstName, a.lastName, b.title, min(b.publishDate) AS "First Book"
+    FROM authors as a
+    LEFT OUTER JOIN books as b
+    ON a.id = b.authorID
+    GROUP BY a.lastName;
